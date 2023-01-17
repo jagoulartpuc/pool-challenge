@@ -1,0 +1,5 @@
+spring:
+  data:
+    mongodb:
+      database: pool-challenge
+      uri: mongodb+srv://admin:admin@cluster0.mmz1f.mongodb.net/?retryWrites=true&w=majority
