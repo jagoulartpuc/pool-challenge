@@ -1,4 +1,13 @@
+springdoc:
+  swagger-ui:
+    path: /swagger-ui-custom.html
+
 spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
   data:
     mongodb:
       database: pool-challenge

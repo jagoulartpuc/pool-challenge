@@ -1,6 +1,9 @@
 package southsystem.votechallenge.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import southsystem.votechallenge.domain.Employee;
@@ -21,14 +24,28 @@ public class PoolService {
     @Autowired
     private HttpSession session;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private ObjectMapper mapper;
+
     public Pool createPool(Pool pool) {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        Runnable closePool = () -> {
+        executor.schedule(closePool(pool), pool.getDuration(), TimeUnit.MINUTES);
+        return poolRepository.insert(pool);
+    }
+
+    private Runnable closePool(Pool pool) {
+        return () -> {
             pool.setOpened(false);
             poolRepository.save(pool);
+            try {
+                rabbitTemplate.convertAndSend("pool-results", mapper.writeValueAsString(pool));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
         };
-        executor.schedule(closePool, pool.getDuration(), TimeUnit.MINUTES);
-        return poolRepository.insert(pool);
     }
 
     public Pool getPoolById(String id) {
