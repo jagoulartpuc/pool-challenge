@@ -12,8 +12,13 @@ repositories {
 	mavenCentral()
 }
 
-tasks.withType(Copy).all { duplicatesStrategy 'exclude' }
+tasks.withType(Tar){
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
 
+tasks.withType(Zip){
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
