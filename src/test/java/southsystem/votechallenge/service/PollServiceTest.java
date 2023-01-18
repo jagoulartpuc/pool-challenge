@@ -13,6 +13,8 @@ import southsystem.votechallenge.domain.Employee;
 import southsystem.votechallenge.domain.Poll;
 import southsystem.votechallenge.repository.PollRepository;
 
+import java.util.List;
+
 @SpringBootTest
 class PollServiceTest {
     @Mock
@@ -44,7 +46,8 @@ class PollServiceTest {
         employee.setCpf("123");
         Mockito.when(session.getAttribute("employee")).thenReturn(employee);
         Poll poll = new Poll("1", "Querem happy hour na sexta-feira?", 5);
-        Mockito.when(pollRepository.findById("123")).thenReturn(java.util.Optional.of(poll));
+        Mockito.when(pollRepository.findAll()).thenReturn(List.of(poll));
+
         String result = pollService.voteInPoll("yes");
         assertEquals("Vote computed!", result);
         assertEquals(1, poll.getCountYes());
@@ -57,7 +60,7 @@ class PollServiceTest {
         employee.setCpf("123");
         Mockito.when(session.getAttribute("employee")).thenReturn(employee);
         Poll poll = new Poll("1", "Querem happy hour na sexta-feira?", 5);
-        Mockito.when(pollRepository.findById("123")).thenReturn(java.util.Optional.of(poll));
+        Mockito.when(pollRepository.findAll()).thenReturn(List.of(poll));
 
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
             pollService.voteInPoll("yes");
@@ -73,12 +76,12 @@ class PollServiceTest {
         Mockito.when(session.getAttribute("employee")).thenReturn(employee);
         Poll poll = new Poll("1", "Querem happy hour na sexta-feira?", 5);
         poll.setOpened(false);
-        Mockito.when(pollRepository.findById("123")).thenReturn(java.util.Optional.of(poll));
+        Mockito.when(pollRepository.findAll()).thenReturn(List.of(poll));
 
         RuntimeException thrown =
                 assertThrows(RuntimeException.class, () -> pollService.voteInPoll("yes"),
-                        "This pool is already closed.");
-        assertEquals("This pool is already closed.", thrown.getMessage());
+                        "No opened poll found.");
+        assertEquals("No opened poll found.", thrown.getMessage());
     }
 
     @Test
@@ -87,7 +90,7 @@ class PollServiceTest {
         employee.setCpf("123");
         Mockito.when(session.getAttribute("employee")).thenReturn(employee);
         Poll poll = new Poll("1", "Querem happy hour na sexta-feira?", 5);
-        Mockito.when(pollRepository.findById("123")).thenReturn(java.util.Optional.of(poll));
+        Mockito.when(pollRepository.findAll()).thenReturn(List.of(poll));
 
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> pollService.voteInPoll("xxx"),
                 "Option does not exist.");

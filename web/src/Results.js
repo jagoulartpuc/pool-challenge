@@ -7,6 +7,7 @@ const Results = () => {
     const [opened, setOpened] = useState(true);
     const [countYes, setCountYes] = useState(0);
     const [countNo, setCountNo] = useState(0);
+    const [topic, setTopic] = useState('');
 
     useEffect(() => {
         async function getPool() {
@@ -17,6 +18,7 @@ const Results = () => {
                 setOpened(false);
                 setCountYes(poll.countYes)
                 setCountNo(poll.countNo)
+                setTopic(poll.topicName)
 
             }
             console.log(poll);
@@ -28,6 +30,9 @@ const Results = () => {
         <>
             {!opened &&
                 <div className="container">
+                    <Typography variant="h3" gutterBottom>
+                        {topic}
+                    </Typography>
                     <Table>
                         <TableBody>
                             <TableRow>

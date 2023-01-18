@@ -3,8 +3,14 @@ package southsystem.votechallenge.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import southsystem.votechallenge.domain.Employee;
 import southsystem.votechallenge.domain.Poll;
@@ -30,14 +36,38 @@ public class PollService {
     @Autowired
     private ObjectMapper mapper;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    private static Logger LOGGER = LoggerFactory.getLogger(PollService.class);
+
     public Poll createPool(Poll poll) {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.schedule(closePool(poll), poll.getDuration(), TimeUnit.MINUTES);
+        executor.schedule(closePool(poll.getId()), poll.getDuration(), TimeUnit.MINUTES);
         if (!openedPoolExists()) {
+            LOGGER.info("New poll created: " + poll.getId());
             return pollRepository.insert(poll);
         }
+        LOGGER.info("A pool is already opened: " + poll.getId());
         return null;
     }
+
+    private Runnable closePool(String pollId) {
+        return () -> {
+            Query query = new Query(Criteria.where("id").is(pollId));
+            Update update = new Update().set("opened", false);
+            mongoTemplate.updateFirst(query, update, Poll.class);
+            LOGGER.info("Poll has been closed:" + pollId);
+            try {
+                Poll poll = pollRepository.findById(pollId).get();
+                rabbitTemplate.convertAndSend("pool-results", mapper.writeValueAsString(poll));
+                LOGGER.info("The poll was sent to rabbit queue: " + poll.getId());
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
 
     private boolean openedPoolExists() {
         try {
@@ -46,21 +76,6 @@ public class PollService {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    private Runnable closePool(Poll poll) {
-        Poll pollUpdated = getLastPoll();
-        return () -> {
-            poll.setOpened(false);
-            poll.setCountYes(pollUpdated.getCountYes());
-            poll.setCountNo(pollUpdated.getCountNo());
-            pollRepository.save(poll);
-            try {
-                rabbitTemplate.convertAndSend("pool-results", mapper.writeValueAsString(poll));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        };
     }
 
     public Poll getPoolById(String id) {
@@ -82,17 +97,10 @@ public class PollService {
     private void verifyExistingVote(String vote, Employee employee, Poll poll) {
         String cpf = employee.getCpf();
         if (!poll.getEmployeesWhoVoted().contains(cpf)) {
-            verifyOpenedPoll(cpf, vote, poll);
-        } else {
-            throw new RuntimeException("This employee has already voted.");
-        }
-    }
-
-    private void verifyOpenedPoll(String cpf, String vote, Poll poll) {
-        if (poll.isOpened()) {
             computeVote(vote, cpf, poll);
         } else {
-            throw new RuntimeException("This pool is already closed.");
+            LOGGER.error("This employee has already voted: " + employee.getCpf() + " in poll: " + poll.getId());
+            throw new RuntimeException("This employee has already voted.");
         }
     }
 
@@ -106,6 +114,7 @@ public class PollService {
             countNo++;
             poll.setCountNo(countNo);
         } else {
+            LOGGER.error("Option does not exist.");
             throw new RuntimeException("Option does not exist.");
         }
         poll.getEmployeesWhoVoted().add(cpf);
@@ -117,7 +126,12 @@ public class PollService {
                 .stream()
                 .filter(Poll::isOpened)
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(this::noOpenedPoll);
+    }
+
+    private RuntimeException noOpenedPoll() {
+        LOGGER.error("No opened poll found.");
+        return new RuntimeException("No opened poll found.");
     }
 
     public Poll getLastPoll() {
