@@ -11,7 +11,7 @@ const Results = () => {
 
     useEffect(() => {
         async function getPool() {
-            const response = await fetch('http://localhost:8080/poll/last');
+            const response = await fetch('http://3.82.203.14:8080/poll/last');
 
             const poll = await response.json();
             if (!poll.opened) {
