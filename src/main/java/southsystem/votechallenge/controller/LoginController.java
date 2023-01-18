@@ -16,7 +16,7 @@ public class LoginController {
     private EmployeeService employeeService;
 
     @PostMapping("/login")
-    @CrossOrigin(origins = { "http://3.82.203.14:3000" }, allowedHeaders = "*", allowCredentials = "true")
+    @CrossOrigin(origins = { "http://3.87.228.36:3000" }, allowedHeaders = "*", allowCredentials = "true")
     public ResponseEntity<String> login(HttpSession session, String cpf) {
         Employee employee = employeeService.getByCPF(cpf);
         try {
