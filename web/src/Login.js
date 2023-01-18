@@ -16,8 +16,7 @@ function Login() {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "http://3.87.228.36:3000"
+                    "Content-Type": "application/json"
                   },
                   credentials: 'include'
             });
