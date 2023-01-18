@@ -14,6 +14,7 @@ function Login() {
         const response = await fetch(`http://44.201.131.139:8080/login?cpf=${cpf}`,
             {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: {
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Origin": "http://3.87.228.36:3000"
