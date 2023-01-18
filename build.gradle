@@ -12,6 +12,8 @@ repositories {
 	mavenCentral()
 }
 
+tasks.withType(Copy).all { duplicatesStrategy 'exclude' }
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
