@@ -14,7 +14,6 @@ function Login() {
         const response = await fetch(`http://44.201.131.139:8080/login?cpf=${cpf}`,
             {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: {
                     "Content-Type": "application/json"
                   },
@@ -22,12 +21,12 @@ function Login() {
             });
 
         const json = await response.text();
+        console.log(json);
         if (json == 'Logged in!') {
             navigator('/poll');
         } else {
             setError(true);
         }
-        console.log(json);
     }
 
     const handleSubmit = (e) => {
