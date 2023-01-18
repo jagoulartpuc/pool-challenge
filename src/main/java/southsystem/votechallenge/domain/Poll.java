@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "pool")
-public class Pool {
+public class Poll {
 
     @Id
     private String id;
@@ -18,7 +18,7 @@ public class Pool {
     private int duration;
     private List<String> employeesWhoVoted;
 
-    public Pool(String id, String topicName, int duration) {
+    public Poll(String id, String topicName, int duration) {
         this.id = id;
         this.topicName = topicName;
         this.countYes = 0;

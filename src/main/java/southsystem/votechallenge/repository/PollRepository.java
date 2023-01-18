@@ -2,9 +2,9 @@ package southsystem.votechallenge.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import southsystem.votechallenge.domain.Pool;
+import southsystem.votechallenge.domain.Poll;
 
 @Repository
-public interface PoolRepository extends MongoRepository<Pool, String> {
+public interface PollRepository extends MongoRepository<Poll, String> {
 
 }
