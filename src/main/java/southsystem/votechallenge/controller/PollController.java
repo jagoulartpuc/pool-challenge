@@ -17,12 +17,8 @@ public class PollController {
     private PollService pollService;
 
     @PostMapping
-    public ResponseEntity<?> postPoll(@RequestBody Poll poll) {
-        try {
-            return ResponseEntity.ok(pollService.createPool(poll));
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(500).body(e.getMessage());
-        }
+    public Poll postPoll(@RequestBody Poll poll) {
+        return pollService.createPool(poll);
     }
 
     @CrossOrigin
@@ -42,7 +38,7 @@ public class PollController {
         return pollService.getAllPools();
     }
 
-    @CrossOrigin(origins = { "http://localhost:3000" }, allowedHeaders = "*", allowCredentials = "true")
+    @CrossOrigin(origins = {"http://3.87.228.36:3000"}, allowedHeaders = "*", allowCredentials = "true")
     @PutMapping
     public ResponseEntity<String> voteInPoll(@RequestParam String vote) {
         try {
