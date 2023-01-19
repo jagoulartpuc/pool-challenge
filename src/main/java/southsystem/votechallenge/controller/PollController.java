@@ -42,7 +42,7 @@ public class PollController {
         return pollService.getAllPools();
     }
 
-    @CrossOrigin(origins = {"http://localhost:3000"}, allowedHeaders = "*", allowCredentials = "true")
+    @CrossOrigin(origins = {"http://52.23.164.7:3000"}, allowedHeaders = "*", allowCredentials = "true")
     @PutMapping
     public ResponseEntity<String> voteInPoll(@RequestParam String vote) {
         try {
