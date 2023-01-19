@@ -1,7 +1,7 @@
 # pool-challenge
 Solução feita em Java Spring Boot e React.
 
-Documentação Swagger: http://44.201.131.139:8080/swagger-ui-custom.html
+Documentação Swagger: http://52.23.164.7:8080/swagger-ui-custom.html
 
 Deploy EC2 backend: http://52.23.164.7:8080
 
