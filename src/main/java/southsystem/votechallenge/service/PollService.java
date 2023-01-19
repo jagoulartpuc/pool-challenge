@@ -49,7 +49,7 @@ public class PollService {
             return pollRepository.insert(poll);
         }
         LOGGER.info("A pool is already opened: " + poll.getId());
-        return null;
+        throw new RuntimeException("A pool is already opened.");
     }
 
     private Runnable closePool(String pollId) {
@@ -90,6 +90,7 @@ public class PollService {
         Employee employee = (Employee) session.getAttribute("employee");
         Poll poll = getOpenedPoll();
         verifyExistingVote(vote, employee, poll);
+        LOGGER.info("Voted computed from employee: " + employee.getCpf());
 
         return "Vote computed!";
     }

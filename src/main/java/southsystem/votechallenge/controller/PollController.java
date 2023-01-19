@@ -17,8 +17,12 @@ public class PollController {
     private PollService pollService;
 
     @PostMapping
-    public Poll postPoll(@RequestBody Poll poll) {
-        return pollService.createPool(poll);
+    public ResponseEntity<?> postPoll(@RequestBody Poll poll) {
+        try {
+            return ResponseEntity.ok(pollService.createPool(poll));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
 
     @CrossOrigin
