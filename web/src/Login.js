@@ -17,7 +17,7 @@ function Login() {
                 headers: {
                     "Content-Type": "application/json"
                   },
-                  credentials: 'include'
+                credentials: 'include'
             });
 
         const json = await response.text();
