@@ -13,7 +13,7 @@ function Poll() {
     const navigator = useNavigate();
 
     async function voteInPool() {
-        const response = await fetch(`http://52.23.164.7:8080/poll?vote=${vote}`,
+        const response = await fetch(`http://54.234.35.66:8080/poll?vote=${vote}`,
             {
                 method: 'PUT',
                 headers: {
@@ -34,7 +34,7 @@ function Poll() {
 
     useEffect(() => {
         async function getPool() {
-            const response = await fetch('http://52.23.164.7:8080/poll/opened');
+            const response = await fetch('http://54.234.35.66:8080/poll/opened');
 
             const { topicName } = await response.json();
             setTopic(topicName)

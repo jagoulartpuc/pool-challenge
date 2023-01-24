@@ -11,7 +11,7 @@ function Login() {
     const navigator = useNavigate();
 
     async function login() {
-        const response = await fetch(`http://52.23.164.7:8080/login?cpf=${cpf}`,
+        const response = await fetch(`http://54.234.35.66:8080/login?cpf=${cpf}`,
             {
                 method: 'POST',
                 headers: {
